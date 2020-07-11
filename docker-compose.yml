@@ -1,5 +1,16 @@
-version: "3"
+version: "3.2"
 services:
+  portainer:
+    image: portainer/portainer
+    command: -H unix:///var/run/docker.sock
+    restart: always
+    ports:
+      - 9000:9000
+      - 8000:8000
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - portainer_data:/data
+    container_name: portainer
   db-mariadb:
     image: mariadb:10.1.30
     restart: always
@@ -39,3 +50,5 @@ services:
     ports:
       - "80:80"
     container_name: php-application
+volumes:
+  portainer_data:
