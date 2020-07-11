@@ -1,0 +1,41 @@
+version: "3"
+services:
+  db-mariadb:
+    image: mariadb:10.1.30
+    restart: always
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=admin
+      - MYSQL_USER=moeuser
+      - MYSQL_PASSWORD=moepass 
+      - MYSQL_DATABASE=moe_db
+    container_name: db-mariadb
+  phpmyadmin-mariadb:
+    image: phpmyadmin/phpmyadmin:4.7
+    depends_on:
+      - db-mariadb
+    ports:
+      - "8080:80"
+    environment:
+      - PMA_HOST=db-mariadb
+      - PMA_PORT= 3306
+    volumes:
+      - /sessions
+    container_name: phpmyadmin-mariadb
+  php-application:
+    build: 
+      context: .
+    image: app:latest
+    depends_on:
+      - db-mariadb
+    environment:
+      - MYSQL_HOST=db-mariadb
+      - MYSQL_USER=moeuser
+      - MYSQL_PASSWORD=moepass
+      - MYSQL_DB=moe_db
+    volumes:
+      - ./www/:/var/www/html/
+    ports:
+      - "80:80"
+    container_name: php-application
